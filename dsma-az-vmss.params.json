@@ -1,0 +1,30 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "vmSku": {
+      "value": "Standard_DC4s_v2"
+    },
+    "vmssName": {
+      "value": "dsmazprod"
+    },
+    "instanceCount": {
+      "value": 5
+    },
+    "adminUsername": {
+      "value": "dsmaadmin"
+    },
+    "appGwSize": {
+      "value": "large"
+    },
+    "appGwQty": {
+      "value": 10
+    },
+    "dsmaPort": {
+      "value": 8443
+    },
+    "dsmEndpoint": {
+      "value": "https://amer.smartkey.io"
+    }
+  }
+}

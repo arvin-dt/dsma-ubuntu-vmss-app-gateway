@@ -1,0 +1,9 @@
+{
+  "$schema": "https://aka.ms/azure-quickstart-templates-metadata-schema#",
+  "type": "Fortanix",
+  "itemDisplayName": "Deploy Ubuntu VMs with Azure Application Gateway and TLS termination",
+  "description": "This template allows you to deploy a set of Ubuntu VMs integrated with Azure Application Gateway, and support front-end TLS",
+  "summary": "This template deploys Ubuntu VMs with incoming web connections balanced by the Azure Application Gateway",
+  "githubUsername": "arvin-dt",
+  "dateUpdated": "2022-01-09"
+}
