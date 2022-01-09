@@ -25,6 +25,12 @@
     },
     "dsmEndpoint": {
       "value": "https://amer.smartkey.io"
+    },
+    "resourceTags": {
+      "value": {
+        "FX_PURPOSE": "PSA-XXXX",
+        "FX_USER": "WhoDunit"
+      }
     }
   }
 }
