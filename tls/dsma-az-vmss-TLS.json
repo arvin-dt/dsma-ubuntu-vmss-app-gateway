@@ -48,6 +48,25 @@
       "minValue": 1,
       "maxValue": 32
     },
+    "appGwPort": {
+      "type": "int",
+      "metadata": {
+        "description": "Port number to expose DSMA externally."
+      },
+      "defaultValue": 443
+    },
+    "tlsCertDataB64": {
+      "type": "securestring",
+      "metadata": {
+        "description": "The base-64 encoded SSL certificate data (PEM format)."
+      }
+    },
+    "tlsCertPwd": {
+      "type": "securestring",
+      "metadata": {
+        "description": "The TLS certificate password."
+      }
+    },
     "authenticationType": {
       "type": "string",
       "defaultValue": "sshPublicKey",
@@ -126,11 +145,12 @@
     },
     "appGwPublicIPAddressName": "[concat(variables('namingInfix'), '-appGwPip')]",
     "appGwName": "[concat(variables('namingInfix'), '-appGw')]",
+    "appGwId": "[resourceId('Microsoft.Network/applicationGateways', variables('appGwName'))]",
     "appGwPublicIPAddressID": "[resourceId('Microsoft.Network/publicIPAddresses',variables('appGwPublicIPAddressName'))]",
     "appGwSubnetName": "[concat(variables('namingInfix'), '-appGwSubnet')]",
     "appGwSubnetPrefix": "10.0.1.0/24",
     "appGwSubnetID": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('virtualNetworkName'), variables('appGwSubnetName'))]",
-    "appGwFrontendPort": 80,
+    "appGwFrontendPort": "[parameters('appGwPort')]",
     "appGwBackendPort": "[parameters('dsmaPort')]",
     "appGwBePoolName": "[concat(variables('namingInfix'), '-appGwBepool')]",
     "linuxConfiguration": {
@@ -259,6 +279,15 @@
             }
           }
         ],
+        "sslCertificates": [
+          {
+            "name": "appGwTlsCertificate",
+            "properties": {
+              "data": "[parameters('tlsCertDataB64')]",
+              "password": "[parameters('tlsCertPwd')]"
+            }
+          }
+         ],
         "backendAddressPools": [
           {
             "name": "[variables('appGwBePoolName')]"
@@ -284,7 +313,10 @@
               "FrontendPort": {
                 "Id": "[resourceId('Microsoft.Network/applicationGateways/frontendPorts/',variables('appGwName'), 'appGwFrontendPort')]"
               },
-              "Protocol": "Http"
+              "Protocol": "[if(not(empty(parameters('tlsCertDataB64'))), 'Https', 'Http')]",
+              "SslCertificate": {
+                "id": "[concat(variables('appGwId'), '/sslCertificates/appGwTlsCertificate')]"
+              }
             }
           }
         ],
@@ -311,7 +343,7 @@
       "type": "Microsoft.Compute/virtualMachineScaleSets",
       "name": "[concat(variables('namingInfix'), '-vmss')]",
       "location": "[parameters('location')]",
-      "apiVersion": "2017-03-30",
+      "apiVersion": "2021-07-01",
       "tags": "[parameters('resourceTags')]",
       "dependsOn": [
         "[resourceId('Microsoft.Network/virtualNetworks/', variables('virtualNetworkName'))]",
@@ -323,7 +355,7 @@
         "capacity": "[parameters('instanceCount')]"
       },
       "properties": {
-        "overprovision": "true",
+        "overprovision": "false",
         "singlePlacementGroup": "false",
         "upgradePolicy": {
           "mode": "Automatic"
@@ -369,6 +401,20 @@
           },
           "extensionProfile": {
             "extensions": [
+              {
+                "name": "dsma-health-extension",
+                "properties": {
+                  "autoUpgradeMinorVersion": true,
+                  "publisher": "Microsoft.ManagedServices",
+                  "type": "ApplicationHealthLinux",
+                  "typeHandlerVersion": "1.0",
+                  "settings": {
+                    "requestPath": "/",
+                    "protocol": "http",
+                    "port": "[parameters('dsmaPort')]"
+                  }
+                }
+              },
               {
                 "name": "deploy-dsma-extension",
                 "properties": {

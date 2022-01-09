@@ -3,33 +3,39 @@
   "contentVersion": "1.0.0.0",
   "parameters": {
     "vmSku": {
-      "value": "Standard_DC4s_v2"
+      "value": "Standard_F4s_v2"
     },
     "vmssName": {
-      "value": "dsmazprod"
+      "value": "dsmazStage"
     },
     "instanceCount": {
-      "value": 5
+      "value": 3
     },
     "adminUsername": {
       "value": "dsmaadmin"
     },
     "appGwSize": {
-      "value": "large"
+      "value": "medium"
     },
     "appGwQty": {
-      "value": 10
+      "value": 1
     },
-    "dsmaPort": {
+    "appGwPort": {
       "value": 8443
     },
+    "dsmaPort": {
+      "value": 8080
+    },
     "dsmEndpoint": {
-      "value": "https://amer.smartkey.io"
+      "value": "https://sdkms.fortanix.com"
+    },
+    "dsmaInstaller": {
+      "value": "https://support.fortanix.com/dsma.tgz"
     },
     "resourceTags": {
       "value": {
         "FX_PURPOSE": "PSA-XXXX",
-        "FX_USER": "WhoDunit"
+        "FX_USER": "WhoDunIt"
       }
     }
   }
